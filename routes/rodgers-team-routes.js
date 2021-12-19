@@ -170,8 +170,7 @@ router.post("/teams/:id/players", async (req, res) => {
       lastName: req.body.lastName,
       salary: req.body.salary,
     };
-
-    await Team.findOne({ _id: req.params.id }, function (err, team) {
+    Team.findOne({ _id: req.params.id }, function (err, team) {
       if (err) {
         console.log(err);
         res.status(501).send({
@@ -179,10 +178,21 @@ router.post("/teams/:id/players", async (req, res) => {
         });
       } else if (!team) {
         res.status(401).send({
-          message: `Invalid teamID: ${req.params.id}`,
+          message: `Invalid teamId: ${req.params.id}`,
         });
       } else {
-        res.json(team.player);
+        team.players.push(newPlayer);
+        Team.update(team, function (error, updatedTeam) {
+          if (err) {
+            console.log(err);
+            res.status(501).send({
+              message: `MongoDB Exception: ${err}`,
+            });
+          } else {
+            console.log(team);
+            res.json(team);
+          }
+        });
       }
     });
   } catch (e) {
