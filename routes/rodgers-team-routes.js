@@ -55,9 +55,77 @@ router.get("/teams", async (req, res) => {
   }
 });
 
-// Find by Team ID
+// Assign player to team
 
-// Find by ID
+/**
+ * assignPlayerToTeam
+ * @openapi
+ * /api/teams/{id}/players:
+ *   post:
+ *     tags:
+ *       - Teams
+ *     name: assignPlayerToTeam
+ *     description: API for adding a new player to a team
+ *     summary: Creates a player document
+ *     requestBody:
+ *       description: Team information
+ *       content:
+ *         application/json:
+ *           schema:
+ *             required:
+ *               - id
+ *               - firstName
+ *               - lastName
+ *               - salary
+ *             properties:
+ *               id:
+ *                 id: string
+ *                 firstName: string
+ *                 lastName: string
+ *                 salary: string
+ *     responses:
+ *       '200':
+ *         description: Player document
+ *       '401':
+ *         description: Invalid teamID
+ *       '500':
+ *         description: Server Exception
+ *       '501':
+ *         description: MongoDB Exception
+ */
+
+router.post("/teams/:id/players", async (req, res) => {
+  try {
+    const newPlayer = {
+      id: req.body.id,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      salary: req.body.salary,
+    };
+
+    await Team.create(newPlayer, function (err, team) {
+      if (err) {
+        console.log(err);
+        res.status(501).send({
+          message: `MongoDB Exception: ${err}`,
+        });
+      } else if (!team) {
+        res.status(401).send({
+          message: `Invalid teamID: ${req.params.id}`,
+        });
+      } else {
+        res.json(team.player);
+      }
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send({
+      message: `Server Exception: ${e.message}`,
+    });
+  }
+});
+
+// Find by Team ID
 
 /**
  * findAllPlayersByTeamId
@@ -99,7 +167,6 @@ router.get("/teams/:id/players", async (req, res) => {
           message: `Invalid teamID: ${req.params.id}`,
         });
       } else {
-        console.log(player);
         res.json(team.players);
       }
     });
