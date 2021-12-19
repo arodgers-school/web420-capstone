@@ -16,16 +16,78 @@ var router = express.Router();
 
 var Team = require("../models/rodgers-team");
 
+// Create a team
+
+/**
+ * createTeam
+ * @openapi
+ * /api/teams:
+ *   post:
+ *     tags:
+ *       - Teams
+ *     name: createTeam
+ *     description: API for creating a new team
+ *     summary: Creates a new team document
+ *     requestBody:
+ *       description: Team information
+ *       content:
+ *         application/json:
+ *           schema:
+ *             required:
+ *               - name
+ *               - mascot
+ *             properties:
+ *               name:
+ *                 type: string
+ *               mascot:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Team added
+ *       '500':
+ *         description: Server Exception
+ *       '501':
+ *         description: MongoDB Exception
+ */
+
+router.post("/teams", async (req, res) => {
+  try {
+    const newTeam = {
+      name: req.body.name,
+      mascot: req.body.mascot,
+    };
+
+    await Team.create(newTeam, function (err, team) {
+      if (err) {
+        console.log(err);
+        res.status(501).send({
+          message: `MongoDB Exception: ${err}`,
+        });
+      } else {
+        console.log(team);
+        res.json(team);
+      }
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send({
+      message: `Server Exception: ${e.message}`,
+    });
+  }
+});
+
 // Find All
 
 /**
  * findAllTeams
  * @openapi
  * /api/teams:
- *   post:
+ *   get:
  *     tags:
  *       - Teams
+ *     name: findAllTeams
  *     description: API for returning an array of team documents
+ *     summary: Return an array of team documents
  *     responses:
  *       '200':
  *         description: Array of team documents
@@ -67,22 +129,29 @@ router.get("/teams", async (req, res) => {
  *     name: assignPlayerToTeam
  *     description: API for adding a new player to a team
  *     summary: Creates a player document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: Team ID
+ *         schema:
+ *           type: string
  *     requestBody:
  *       description: Team information
  *       content:
  *         application/json:
  *           schema:
  *             required:
- *               - id
  *               - firstName
  *               - lastName
  *               - salary
  *             properties:
- *               id:
- *                 id: string
- *                 firstName: string
- *                 lastName: string
- *                 salary: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               salary:
+ *                 type: number
  *     responses:
  *       '200':
  *         description: Player document
@@ -97,13 +166,12 @@ router.get("/teams", async (req, res) => {
 router.post("/teams/:id/players", async (req, res) => {
   try {
     const newPlayer = {
-      id: req.body.id,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       salary: req.body.salary,
     };
 
-    await Team.create(newPlayer, function (err, team) {
+    await Team.findOne({ _id: req.params.id }, function (err, team) {
       if (err) {
         console.log(err);
         res.status(501).send({
@@ -135,7 +203,7 @@ router.post("/teams/:id/players", async (req, res) => {
  *     tags:
  *       - Teams
  *     description: API for returning all players by team ID
- *     summary: returns a composer document
+ *     summary: Returns a team document
  *     parameters:
  *       - name: id
  *         in: path
@@ -156,7 +224,7 @@ router.post("/teams/:id/players", async (req, res) => {
 
 router.get("/teams/:id/players", async (req, res) => {
   try {
-    Composer.findOne({ _id: req.params.id }, function (err, team) {
+    Team.findOne({ _id: req.params.id }, function (err, team) {
       if (err) {
         console.log(err);
         res.status(501).send({
@@ -171,6 +239,58 @@ router.get("/teams/:id/players", async (req, res) => {
       }
     });
   } catch (e) {
+    res.status(500).send({
+      message: `Server Exception: ${e.message}`,
+    });
+  }
+});
+
+/**
+ * deleteTeamById
+ * @openapi
+ * /api/teams/{id}:
+ *   delete:
+ *     tags:
+ *       - Teams
+ *     name: deleteTeamById
+ *     description: API for deleting a document.
+ *     summary: Removes a team document by ID.
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: Id of the document
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Team document
+ *       '401':
+ *         description: Invalid teamID
+ *       '500':
+ *         description: Server Exception
+ *       '501':
+ *         description: MongoDB Exception
+ */
+
+router.delete("/teams/:id", async (req, res) => {
+  try {
+    Team.findByIdAndDelete({ _id: req.params.id }, function (err, team) {
+      if (err) {
+        console.log(err);
+        res.status(501).send({
+          message: `MongoDB Exception: ${err}`,
+        });
+      } else if (!team) {
+        res.status(401).send({
+          message: `Invalid teamID: ${req.params.id}`,
+        });
+      } else {
+        res.json(team);
+      }
+    });
+  } catch (e) {
+    console.log(e);
     res.status(500).send({
       message: `Server Exception: ${e.message}`,
     });

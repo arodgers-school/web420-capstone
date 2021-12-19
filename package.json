@@ -1,0 +1,28 @@
+{
+  "name": "web420-capstone",
+  "version": "1.0.0",
+  "description": "<h1>WEB420 Capstone APIs</h1> <h2>Contributors</h2> <ul>   <li>Professor Krasso</li>   <li>Adam Rodgers</li> </ul>",
+  "main": "app.js",
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "express": "^4.17.2",
+    "mongoose": "^6.1.2",
+    "nodemon": "^2.0.15",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arodgers-school/web420-capstone.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arodgers-school/web420-capstone/issues"
+  },
+  "homepage": "https://github.com/arodgers-school/web420-capstone#readme"
+}

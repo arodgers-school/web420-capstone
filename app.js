@@ -33,7 +33,7 @@ app.use(
   })
 );
 
-const conn = "mongodb+srv://web420_user:buwebdev420@buwebdev-cluster-1.zjoha.mongodb.net/web420DB?retryWrites=true&w=majority";
+const conn = "mongodb+srv://web420_user:buwebdev420@buwebdev-cluster-1.zjoha.mongodb.net/web420capstone?retryWrites=true&w=majority";
 mongoose
   .connect(conn, {
     promiseLibrary: require("bluebird"),
@@ -41,7 +41,7 @@ mongoose
     useNewUrlParser: true,
   })
   .then(() => {
-    console.log(`Connection to web420DB on MongoDB Atlas successful`);
+    console.log(`Connection to web420capstone on MongoDB Atlas successful`);
   })
   .catch((err) => {
     console.log(`MongoDB Error: ${err.message}`);
@@ -52,7 +52,7 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "WEB 420 RESTful APIs",
+      title: "WEB 420 Capstone",
       version: "1.0.0",
     },
   },

@@ -14,18 +14,18 @@ Resources:
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-// Build team schema
-let teamSchema = new Schema({
-  name: { type: String },
-  mascot: { type: String },
-  players: [playerSchema],
-});
-
 // Build player schema
 let playerSchema = new Schema({
   firstName: { type: String },
   lastName: { type: String },
   salary: { type: Number },
+});
+
+// Build team schema
+let teamSchema = new Schema({
+  name: { type: String },
+  mascot: { type: String },
+  players: [playerSchema],
 });
 
 // Export module
